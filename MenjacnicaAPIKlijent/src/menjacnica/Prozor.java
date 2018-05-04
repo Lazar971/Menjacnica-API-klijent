@@ -18,6 +18,7 @@ import com.google.gson.stream.JsonReader;
 import util.URLConnectionUtil;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
@@ -167,6 +168,31 @@ public class Prozor extends JFrame {
 			btnKonvertuj = new JButton("Konvertuj");
 			btnKonvertuj.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					Country c=(Country)domacaZ.getSelectedItem();
+					String s=c.getCurrencyId()+"_";
+					c=(Country)stranaZ.getSelectedItem();
+					s+=c.getCurrencyId();
+					String exc=s;
+					s="http://free.currencyconverterapi.com/api/v3/convert?q="+s;
+					try {
+						s=URLConnectionUtil.getContent(s);
+						JsonParser p=new JsonParser();
+						JsonObject obj=p.parse(s).getAsJsonObject();
+						Gson g=new GsonBuilder().create();
+						int count=g.fromJson(obj.getAsJsonObject("query").getAsJsonPrimitive("count"), int.class);
+						if(count==0) {
+							JOptionPane.showMessageDialog(null, "Ne postoji transakcija", "Greska",JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						double odnos=g.fromJson(obj.getAsJsonObject("results").getAsJsonObject(exc).getAsJsonPrimitive("val"), double.class);
+						Double d=new Double(odnos*Double.parseDouble(domacaIz.getText()));
+						stranaIz.setText(d.toString());
+						
+						
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					
 				}
 			});
