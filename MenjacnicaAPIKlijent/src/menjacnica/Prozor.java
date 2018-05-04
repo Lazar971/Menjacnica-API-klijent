@@ -23,9 +23,15 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.Map;
 import java.awt.event.ActionEvent;
@@ -169,25 +175,37 @@ public class Prozor extends JFrame {
 			btnKonvertuj.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					Country c=(Country)domacaZ.getSelectedItem();
-					String s=c.getCurrencyId()+"_";
+					String dom=c.getCurrencyId();
 					c=(Country)stranaZ.getSelectedItem();
-					s+=c.getCurrencyId();
-					String exc=s;
-					s="http://free.currencyconverterapi.com/api/v3/convert?q="+s;
+					String str=c.getCurrencyId();
+					String exc=dom+"_"+str;
+					String s="http://free.currencyconverterapi.com/api/v3/convert?q="+exc;
 					try {
 						s=URLConnectionUtil.getContent(s);
 						JsonParser p=new JsonParser();
 						JsonObject obj=p.parse(s).getAsJsonObject();
-						Gson g=new GsonBuilder().create();
+						Gson g=new GsonBuilder().setPrettyPrinting().create();
 						int count=g.fromJson(obj.getAsJsonObject("query").getAsJsonPrimitive("count"), int.class);
 						if(count==0) {
 							JOptionPane.showMessageDialog(null, "Ne postoji transakcija", "Greska",JOptionPane.ERROR_MESSAGE);
 							return;
 						}
-						double odnos=g.fromJson(obj.getAsJsonObject("results").getAsJsonObject(exc).getAsJsonPrimitive("val"), double.class);
+						Double odnos=g.fromJson(obj.getAsJsonObject("results").getAsJsonObject(exc).getAsJsonPrimitive("val"), double.class);
 						Double d=new Double(odnos*Double.parseDouble(domacaIz.getText()));
 						stranaIz.setText(d.toString());
+						Transakcija t=new Transakcija();
+						t.setDatum(new GregorianCalendar());
+						t.setIzValuta(dom);
+						t.setuValuta(str);
 						
+						if(count==0) 
+							t.setKurs(null);
+						else
+							t.setKurs(odnos.toString());
+						String tran=g.toJson(t);
+						PrintWriter writer=new PrintWriter(new BufferedWriter(new FileWriter("data/log.json", true)));
+						writer.println(tran);
+						writer.close();
 						
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -203,7 +221,6 @@ public class Prozor extends JFrame {
 	private void dodajCB(JComboBox domacaZ ) {
 		for(Country i:countries)
 			domacaZ.addItem(i);
-		
-		
 	}
+	
 }

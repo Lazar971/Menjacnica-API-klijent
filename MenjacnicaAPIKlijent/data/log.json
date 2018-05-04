@@ -1,0 +1,38 @@
+{
+  "datum": {
+    "year": 2018,
+    "month": 4,
+    "dayOfMonth": 4,
+    "hourOfDay": 16,
+    "minute": 57,
+    "second": 54
+  },
+  "izValuta": "XOF",
+  "uValuta": "XOF",
+  "kurs": "1.0"
+}{
+  "datum": {
+    "year": 2018,
+    "month": 4,
+    "dayOfMonth": 4,
+    "hourOfDay": 17,
+    "minute": 4,
+    "second": 7
+  },
+  "izValuta": "AFN",
+  "uValuta": "KHR",
+  "kurs": "57.098792"
+}
+{
+  "datum": {
+    "year": 2018,
+    "month": 4,
+    "dayOfMonth": 4,
+    "hourOfDay": 17,
+    "minute": 4,
+    "second": 16
+  },
+  "izValuta": "XCD",
+  "uValuta": "VND",
+  "kurs": "8487.148262"
+}
